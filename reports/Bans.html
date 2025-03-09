@@ -9,6 +9,23 @@
   <link rel="stylesheet" type="text/css"
     href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
   <style>
+  /* تجميد الرأس */
+#bansTable thead {
+  position: sticky;
+  top: 0;
+  background-color: #59a89c; /* نفس لون الخلفية الحالي */
+  z-index: 10;
+}
+
+/* تأكد أن الجدول لا يتجاوز الحاوية */
+#bansTable {
+  display: block;
+  max-height: 400px; /* ارتفاع الجدول القابل للتمرير */
+  overflow-y: auto;
+}
+  #bansTable thead {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap');
     body { font-family: 'Cairo', sans-serif; background-color: #f8f9fa; margin: 0; padding: 0; direction: rtl; text-align: right; color: #333; }
     .container { max-width: 1200px; margin: 40px auto; background-color: #fff; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); padding: 20px; }
@@ -47,7 +64,11 @@
 </head>
 <body>
   <div class="container">
-    <h1>جـدول محدّث للباندات النشطة</h1>
+<div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+  <img src="https://i.postimg.cc/ncbXV5FZ/128.gif" alt="شعار" style="width: 50px; height: 50px;">
+  <h1 style="margin: 0;">جـدول محدّث للباندات النشطة</h1>
+  <img src="https://i.postimg.cc/ncbXV5FZ/128.gif" alt="شعار" style="width: 50px; height: 50px;">
+</div>
     <div class="message">
       <b>هذا الجدول يعرض الباندات الغير مفكوكه فقط</b><br>
       <b>هذا الجدول تم العمل عليه وتطويره بإجتهاد شخصي من 𝑻𝒖𝒓𝒌𝒊 10</b><br>
@@ -55,7 +76,7 @@
     </div>
     <div class="stats">
       عدد الباندات الكلي (المعروضه في الجدول فقط): <span id="totalCount">3927</span> <br>
-            آخر تحديث للجـدول: 3/9/2025, 5:47:49 AM
+            آخر تحديث للجـدول: 3/9/2025, 5:48:53 AM
     </div>
     <div class="buttons">
       <button class="button" onclick="toggleTable()"><b>إضغط هنا لإظهار/إخفاء الجدول<b></button>
@@ -74,12 +95,12 @@
         <thead>
           <tr>
             <th data-col="admin">أيدي الأدمن</th>
-            <th data-col="ban">أيدي الشخص المبند</th>
+            <th data-col="ban">أيدي المبند</th>
             <th data-col="reason">سبب البان</th>
             <th data-col="date">تاريخ الباند</th>
             <th data-col="days">كم يوم مضى</th>
             <th>رابط الرسالة</th>
-            <th>هل البان صحيح؟<br><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
+            <th>صحيح؟<br><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
           </tr>
         </thead>
         <tbody>
@@ -16231,7 +16252,7 @@
             <td>198036</td>
             <td>هاك </td>
             <td data-date="2024-09-25T02:47:55.548Z">9/25/2024, 05:47</td>
-            <td>164</td>
+            <td>165</td>
             <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1288331122119413882" target="_blank">رابط الرسالة</a></td>
             <td><input type="checkbox" onclick="toggleValidity(1463)"></td>
           </tr>
@@ -21095,7 +21116,7 @@
             <td>325364</td>
             <td>اشتباه هاك</td>
             <td data-date="2024-08-02T02:48:27.095Z">8/2/2024, 05:48</td>
-            <td>218</td>
+            <td>219</td>
             <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1268762309694587011" target="_blank">رابط الرسالة</a></td>
             <td><input type="checkbox" onclick="toggleValidity(1903)"></td>
           </tr>
@@ -35843,7 +35864,7 @@
             <td>8456</td>
             <td>اشتباه هاك</td>
             <td data-date="2024-03-22T02:47:53.870Z">3/22/2024, 05:47</td>
-            <td>351</td>
+            <td>352</td>
             <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1220564584214171648" target="_blank">رابط الرسالة</a></td>
             <td><input type="checkbox" onclick="toggleValidity(3237)"></td>
           </tr>
@@ -38980,7 +39001,7 @@
             <td>اشتباه هاك
 يتفتش ويرجع</td>
             <td data-date="2024-02-12T02:48:38.607Z">2/12/2024, 05:48</td>
-            <td>390</td>
+            <td>391</td>
             <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1206431645096218634" target="_blank">رابط الرسالة</a></td>
             <td><input type="checkbox" onclick="toggleValidity(3520)"></td>
           </tr>
@@ -43496,7 +43517,7 @@
     </div>
     <div class="footer">
       <strong>Made with ♡ by 𝑻𝒖𝒓𝒌𝒊 10</strong><br>
-      آخر تحديث للجـدول: 3/9/2025, 5:47:49 AM
+      آخر تحديث للجـدول: 3/9/2025, 5:48:53 AM
     </div>
   </div>
 
