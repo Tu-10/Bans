@@ -1,0 +1,1001 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="utf-8" />
+  <title>جدول الباندات النشطة | Arab Evils</title>
+  <!-- Removed auto-refresh meta -->
+  <!-- daterangepicker CSS -->
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+  <style>
+  /* تجميد الرأس */
+#bansTable thead {
+  position: sticky;
+  top: 0;
+  background-color: #59a89c; /* نفس لون الخلفية الحالي */
+  z-index: 10;
+}
+  #bansTable thead {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap');
+    body { font-family: 'Cairo', sans-serif; background-color: #f8f9fa; margin: 0; padding: 0; direction: rtl; text-align: right; color: #333; }
+    .container { max-width: 1200px; margin: 40px auto; background-color: #fff; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); padding: 20px; }
+    h1 { text-align: center; color: #59a89c; margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase; }
+    .message { text-align: center; margin-bottom: 20px; font-size: 16px; color: #666; }
+    .stats { text-align: center; margin-bottom: 15px; font-size: 16px; }
+    .stats span { color: #59a89c; font-weight: bold; }
+    .buttons { text-align: center; margin-bottom: 20px; }
+    .buttons .button { padding: 10px 20px; margin: 5px; background-color: #59a89c; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; transition: background-color 0.3s ease; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
+    .buttons .button:hover { background-color: #479488; }
+    #tableContainer { display: none; }
+    #adminFilterExact, #reasonFilterPartial { width: 180px; margin: 0 5px; text-align: center; }
+    #daterange { display: inline-block; cursor: pointer; color: #333; background-color: #fff; border: 1px solid #ccc; padding: 6px 8px; border-radius: 5px; margin: 5px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.05); table-layout: fixed; border-radius: 15px; overflow: hidden; }
+    table thead tr { background-color: #59a89c; color: #fff; text-align: center; }
+    table thead tr th { padding: 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; }
+    table tbody tr { background-color: #fff; transition: background-color 0.3s; }
+    table tbody tr:hover { background-color: #f1f1f1; }
+    table td { padding: 12px; text-align: center; vertical-align: middle; word-wrap: break-word; border-bottom: 1px solid #eaeaea; }
+    .over7days { background-color: #fbdcdc; }
+    .valid-row { background-color: #c8e6c9 !important; }
+    input[type="checkbox"] { width: 18px; height: 18px; }
+    .footer { margin-top: 20px; text-align: center; font-style: italic; color: #999; font-size: 14px; }
+    thead th:nth-of-type(1), tbody td:nth-of-type(1){ width: 90px; }
+    thead th:nth-of-type(2), tbody td:nth-of-type(2){ width: 90px; }
+    thead th:nth-of-type(3), tbody td:nth-of-type(3){ width: 250px; }
+    thead th:nth-of-type(4), tbody td:nth-of-type(4){ width: 150px; }
+    thead th:nth-of-type(5), tbody td:nth-of-type(5){ width: 70px; }
+    thead th:nth-of-type(6), tbody td:nth-of-type(6){ width: 90px; }
+    thead th:nth-of-type(7), tbody td:nth-of-type(7){ width: 60px; }
+  </style>
+  <!-- jQuery, Moment, and daterangepicker JS -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/daterangepicker@3.1/daterangepicker.min.js"></script>
+</head>
+<body>
+  <div class="container">
+<div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+  <img src="https://i.postimg.cc/DzJhXv6N/512.gif" alt="شعار" style="width: 150px; height: 150px;">
+  <h1 style="margin: 0;">جـدول محدّث للباندات النشطة</h1>
+  <img src="https://i.postimg.cc/DzJhXv6N/512.gif" alt="شعار" style="width: 150px; height: 150px;">
+</div>
+    <div class="message">
+      <b>هذا الجدول يعرض الباندات الغير مفكوكه فقط</b><br>
+      <b>هذا الجدول تم العمل عليه وتطويره بإجتهاد شخصي من 𝑻𝒖𝒓𝒌𝒊 10</b><br>
+      <b>هذا الجدول خاص لمسؤولين الباند ويمنع نشره لأي سبب كان ويعرضك للفصل في حال تسريبه</b><br>
+    </div>
+    <div class="stats">
+     <b> عدد الباندات الكلي (المعروضه في الجدول فقط): <span id="totalCount">69</span><b> <br>
+        <b>    آخر تحديث للجـدول: 3/22/2025, 12:28:19 AM<b>
+    </div>
+    <div class="buttons">
+      <button class="button" onclick="toggleTable()"><b>إضغط هنا لإظهار/إخفاء الجدول<b></button>
+      <br>
+      <input id="adminFilterExact" type="text" placeholder="إبحث بالأيدي حقك" />
+      <input id="reasonFilterPartial" type="text" placeholder="إبحث بسبب الباند" />
+      <button class="button" onclick="applyFilters()"><b>بحث<b></button>
+      <br>
+      <div id="daterange">
+        <span>اختر نطاق التاريخ</span>
+        <b class="caret"></b>
+      </div>
+    </div>
+    <div id="tableContainer">
+      <table id="bansTable">
+        <thead>
+          <tr>
+            <th data-col="admin">أيدي الأدمن</th>
+            <th data-col="ban">أيدي المبند</th>
+            <th data-col="reason">سبب البان</th>
+            <th data-col="date">تاريخ الباند</th>
+            <th data-col="days">كم يوم مضى</th>
+            <th>رابط الرسالة</th>
+            <th>صحيح؟<br><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr id="row-0" class="" data-date="2025-03-20T04:17:48.592Z"
+              data-admin="62" data-ban="207496" data-reason="هاك">
+            <td>62</td>
+            <td>207496</td>
+            <td>هاك</td>
+            <td data-date="2025-03-20T04:17:48.592Z">3/20/2025, 07:17</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352134006531162164" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(0)"></td>
+          </tr>
+    
+          <tr id="row-1" class="" data-date="2025-03-20T04:36:03.858Z"
+              data-admin="317793" data-ban="368836" data-reason="سب وقذف">
+            <td>317793</td>
+            <td>368836</td>
+            <td>سب وقذف</td>
+            <td data-date="2025-03-20T04:36:03.858Z">3/20/2025, 07:36</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352138600409600111" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(1)"></td>
+          </tr>
+    
+          <tr id="row-2" class="" data-date="2025-03-20T06:06:18.061Z"
+              data-admin="-7842" data-ban="128322" data-reason="قذب وسب ">
+            <td>-7842</td>
+            <td>128322</td>
+            <td>قذب وسب </td>
+            <td data-date="2025-03-20T06:06:18.061Z">3/20/2025, 09:06</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352161309222764546" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(2)"></td>
+          </tr>
+    
+          <tr id="row-3" class="" data-date="2025-03-20T06:25:21.611Z"
+              data-admin="8145" data-ban="369370" data-reason="يوم تحرش">
+            <td>8145</td>
+            <td>369370</td>
+            <td>يوم تحرش</td>
+            <td data-date="2025-03-20T06:25:21.611Z">3/20/2025, 09:25</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352166105619107862" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(3)"></td>
+          </tr>
+    
+          <tr id="row-4" class="" data-date="2025-03-20T07:48:08.529Z"
+              data-admin="-829" data-ban="338613" data-reason="قذف اهل">
+            <td>-829</td>
+            <td>338613</td>
+            <td>قذف اهل</td>
+            <td data-date="2025-03-20T07:48:08.529Z">3/20/2025, 10:48</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352186938383269900" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(4)"></td>
+          </tr>
+    
+          <tr id="row-5" class="" data-date="2025-03-20T10:28:22.291Z"
+              data-admin="-68" data-ban="364727" data-reason="قذف 5 ايام">
+            <td>-68</td>
+            <td>364727</td>
+            <td>قذف 5 ايام</td>
+            <td data-date="2025-03-20T10:28:22.291Z">3/20/2025, 13:28</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352227261423685703" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(5)"></td>
+          </tr>
+    
+          <tr id="row-6" class="" data-date="2025-03-20T11:03:16.759Z"
+              data-admin="-55555" data-ban="297070" data-reason="قذف">
+            <td>-55555</td>
+            <td>297070</td>
+            <td>قذف</td>
+            <td data-date="2025-03-20T11:03:16.759Z">3/20/2025, 14:03</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352236046259322961" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(6)"></td>
+          </tr>
+    
+          <tr id="row-7" class="" data-date="2025-03-20T11:21:14.337Z"
+              data-admin="-687" data-ban="294403" data-reason="قذف">
+            <td>-687</td>
+            <td>294403</td>
+            <td>قذف</td>
+            <td data-date="2025-03-20T11:21:14.337Z">3/20/2025, 14:21</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352240565948907581" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(7)"></td>
+          </tr>
+    
+          <tr id="row-8" class="" data-date="2025-03-20T12:16:08.788Z"
+              data-admin="-29" data-ban="260764" data-reason="خطف غير قانوني , يوم ">
+            <td>-29</td>
+            <td>260764</td>
+            <td>خطف غير قانوني , يوم </td>
+            <td data-date="2025-03-20T12:16:08.788Z">3/20/2025, 15:16</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352254383877918741" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(8)"></td>
+          </tr>
+    
+          <tr id="row-9" class="" data-date="2025-03-20T13:18:03.769Z"
+              data-admin="441" data-ban="355822" data-reason="نهائي تسحيب">
+            <td>441</td>
+            <td>355822</td>
+            <td>نهائي تسحيب</td>
+            <td data-date="2025-03-20T13:18:03.769Z">3/20/2025, 16:18</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352269965637713922" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(9)"></td>
+          </tr>
+    
+          <tr id="row-10" class="" data-date="2025-03-20T13:44:20.666Z"
+              data-admin="118" data-ban="50409" data-reason="متحول نهائي">
+            <td>118</td>
+            <td>50409</td>
+            <td>متحول نهائي</td>
+            <td data-date="2025-03-20T13:44:20.666Z">3/20/2025, 16:44</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352276579622977589" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(10)"></td>
+          </tr>
+    
+          <tr id="row-11" class="" data-date="2025-03-20T14:31:44.041Z"
+              data-admin="747" data-ban="263920" data-reason="قذف 5">
+            <td>747</td>
+            <td>263920</td>
+            <td>قذف 5</td>
+            <td data-date="2025-03-20T14:31:44.041Z">3/20/2025, 17:31</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352288505602113550" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(11)"></td>
+          </tr>
+    
+          <tr id="row-12" class="" data-date="2025-03-20T14:36:48.844Z"
+              data-admin="205" data-ban="338541" data-reason="ملفات ممنوعة نهائي">
+            <td>205</td>
+            <td>338541</td>
+            <td>ملفات ممنوعة نهائي</td>
+            <td data-date="2025-03-20T14:36:48.844Z">3/20/2025, 17:36</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352289784038559764" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(12)"></td>
+          </tr>
+    
+          <tr id="row-13" class="" data-date="2025-03-20T14:46:40.327Z"
+              data-admin="6669" data-ban="370811" data-reason="نهائي - سب الإلهية">
+            <td>6669</td>
+            <td>370811</td>
+            <td>نهائي - سب الإلهية</td>
+            <td data-date="2025-03-20T14:46:40.327Z">3/20/2025, 17:46</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352292264898203678" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(13)"></td>
+          </tr>
+    
+          <tr id="row-14" class="" data-date="2025-03-20T14:52:31.813Z"
+              data-admin="-568" data-ban="208884" data-reason="سب الام ">
+            <td>-568</td>
+            <td>208884</td>
+            <td>سب الام </td>
+            <td data-date="2025-03-20T14:52:31.813Z">3/20/2025, 17:52</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352293739137204265" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(14)"></td>
+          </tr>
+    
+          <tr id="row-15" class="" data-date="2025-03-20T15:26:37.179Z"
+              data-admin="-777777" data-ban="362644" data-reason="اشتباه هاك ">
+            <td>-777777</td>
+            <td>362644</td>
+            <td>اشتباه هاك </td>
+            <td data-date="2025-03-20T15:26:37.179Z">3/20/2025, 18:26</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352302318024134666" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(15)"></td>
+          </tr>
+    
+          <tr id="row-16" class="" data-date="2025-03-20T15:26:51.561Z"
+              data-admin="-777777" data-ban="342881" data-reason="اشتباه هاك ">
+            <td>-777777</td>
+            <td>342881</td>
+            <td>اشتباه هاك </td>
+            <td data-date="2025-03-20T15:26:51.561Z">3/20/2025, 18:26</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352302378346352721" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(16)"></td>
+          </tr>
+    
+          <tr id="row-17" class="" data-date="2025-03-20T17:30:07.786Z"
+              data-admin="-38" data-ban="370851" data-reason="اشتباه هاك">
+            <td>-38</td>
+            <td>370851</td>
+            <td>اشتباه هاك</td>
+            <td data-date="2025-03-20T17:30:07.786Z">3/20/2025, 20:30</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352333400362717274" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(17)"></td>
+          </tr>
+    
+          <tr id="row-18" class="" data-date="2025-03-20T18:00:49.866Z"
+              data-admin="205" data-ban="96625" data-reason="قذف 5 ايام">
+            <td>205</td>
+            <td>96625</td>
+            <td>قذف 5 ايام</td>
+            <td data-date="2025-03-20T18:00:49.866Z">3/20/2025, 21:00</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352341126606229564" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(18)"></td>
+          </tr>
+    
+          <tr id="row-19" class="" data-date="2025-03-20T18:19:16.263Z"
+              data-admin="245426" data-ban="19931" data-reason="سب">
+            <td>245426</td>
+            <td>19931</td>
+            <td>سب</td>
+            <td data-date="2025-03-20T18:19:16.263Z">3/20/2025, 21:19</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352345767171325993" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(19)"></td>
+          </tr>
+    
+          <tr id="row-20" class="" data-date="2025-03-20T18:40:51.999Z"
+              data-admin="453" data-ban="368240" data-reason="سب 3 ايام ">
+            <td>453</td>
+            <td>368240</td>
+            <td>سب 3 ايام </td>
+            <td data-date="2025-03-20T18:40:51.999Z">3/20/2025, 21:40</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352351201882013758" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(20)"></td>
+          </tr>
+    
+          <tr id="row-21" class="" data-date="2025-03-20T18:55:42.327Z"
+              data-admin="195051" data-ban="359352" data-reason="3 ايام سب">
+            <td>195051</td>
+            <td>359352</td>
+            <td>3 ايام سب</td>
+            <td data-date="2025-03-20T18:55:42.327Z">3/20/2025, 21:55</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352354936188440628" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(21)"></td>
+          </tr>
+    
+          <tr id="row-22" class="" data-date="2025-03-20T19:58:23.543Z"
+              data-admin="429" data-ban="363661" data-reason="شتم">
+            <td>429</td>
+            <td>363661</td>
+            <td>شتم</td>
+            <td data-date="2025-03-20T19:58:23.543Z">3/20/2025, 22:58</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352370711871885442" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(22)"></td>
+          </tr>
+    
+          <tr id="row-23" class="" data-date="2025-03-20T20:27:35.496Z"
+              data-admin="-78" data-ban="370873" data-reason="قذف في الشات 5 ايام">
+            <td>-78</td>
+            <td>370873</td>
+            <td>قذف في الشات 5 ايام</td>
+            <td data-date="2025-03-20T20:27:35.496Z">3/20/2025, 23:27</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352378060095361177" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(23)"></td>
+          </tr>
+    
+          <tr id="row-24" class="" data-date="2025-03-20T20:27:53.940Z"
+              data-admin="-78" data-ban="370871" data-reason="قذف في الشات 5 ايام">
+            <td>-78</td>
+            <td>370871</td>
+            <td>قذف في الشات 5 ايام</td>
+            <td data-date="2025-03-20T20:27:53.940Z">3/20/2025, 23:27</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352378137454841866" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(24)"></td>
+          </tr>
+    
+          <tr id="row-25" class="" data-date="2025-03-20T20:40:07.763Z"
+              data-admin="448" data-ban="249296" data-reason="سب 3 ايام">
+            <td>448</td>
+            <td>249296</td>
+            <td>سب 3 ايام</td>
+            <td data-date="2025-03-20T20:40:07.763Z">3/20/2025, 23:40</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352381215331582076" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(25)"></td>
+          </tr>
+    
+          <tr id="row-26" class="" data-date="2025-03-20T21:01:06.666Z"
+              data-admin="-3" data-ban="221484" data-reason="3 ايام
+إعلان مسيء">
+            <td>-3</td>
+            <td>221484</td>
+            <td>3 ايام
+إعلان مسيء</td>
+            <td data-date="2025-03-20T21:01:06.666Z">3/21/2025, 24:01</td>
+            <td>1</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352386495553474631" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(26)"></td>
+          </tr>
+    
+          <tr id="row-27" class="" data-date="2025-03-20T21:32:41.498Z"
+              data-admin="-5796" data-ban="285768" data-reason="قذف">
+            <td>-5796</td>
+            <td>285768</td>
+            <td>قذف</td>
+            <td data-date="2025-03-20T21:32:41.498Z">3/21/2025, 24:32</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352394443054907446" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(27)"></td>
+          </tr>
+    
+          <tr id="row-28" class="" data-date="2025-03-20T22:15:43.554Z"
+              data-admin="180" data-ban="31558" data-reason="قذف">
+            <td>180</td>
+            <td>31558</td>
+            <td>قذف</td>
+            <td data-date="2025-03-20T22:15:43.554Z">3/21/2025, 01:15</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352405272982720615" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(28)"></td>
+          </tr>
+    
+          <tr id="row-29" class="" data-date="2025-03-20T22:16:10.331Z"
+              data-admin="180" data-ban="143759" data-reason="تلفيت من سناريو">
+            <td>180</td>
+            <td>143759</td>
+            <td>تلفيت من سناريو</td>
+            <td data-date="2025-03-20T22:16:10.331Z">3/21/2025, 01:16</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352405385293860985" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(29)"></td>
+          </tr>
+    
+          <tr id="row-30" class="" data-date="2025-03-20T22:39:18.334Z"
+              data-admin="-38" data-ban="370930" data-reason="هاك">
+            <td>-38</td>
+            <td>370930</td>
+            <td>هاك</td>
+            <td data-date="2025-03-20T22:39:18.334Z">3/21/2025, 01:39</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352411207000133753" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(30)"></td>
+          </tr>
+    
+          <tr id="row-31" class="" data-date="2025-03-20T22:51:19.211Z"
+              data-admin="333000" data-ban="341377" data-reason="سب">
+            <td>333000</td>
+            <td>341377</td>
+            <td>سب</td>
+            <td data-date="2025-03-20T22:51:19.211Z">3/21/2025, 01:51</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352414230577680394" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(31)"></td>
+          </tr>
+    
+          <tr id="row-32" class="" data-date="2025-03-20T23:06:33.550Z"
+              data-admin="556" data-ban="291668" data-reason="تشفير">
+            <td>556</td>
+            <td>291668</td>
+            <td>تشفير</td>
+            <td data-date="2025-03-20T23:06:33.550Z">3/21/2025, 02:06</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352418065593274398" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(32)"></td>
+          </tr>
+    
+          <tr id="row-33" class="" data-date="2025-03-20T23:23:31.661Z"
+              data-admin="-952" data-ban="370549" data-reason="نهائي هاك">
+            <td>-952</td>
+            <td>370549</td>
+            <td>نهائي هاك</td>
+            <td data-date="2025-03-20T23:23:31.661Z">3/21/2025, 02:23</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352422335860441151" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(33)"></td>
+          </tr>
+    
+          <tr id="row-34" class="" data-date="2025-03-21T00:09:09.690Z"
+              data-admin="-9880" data-ban="283080" data-reason="RDM+سب+قذف المدة5 ايام">
+            <td>-9880</td>
+            <td>283080</td>
+            <td>RDM+سب+قذف المدة5 ايام</td>
+            <td data-date="2025-03-21T00:09:09.690Z">3/21/2025, 03:09</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352433819986301009" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(34)"></td>
+          </tr>
+    
+          <tr id="row-35" class="" data-date="2025-03-21T00:35:43.508Z"
+              data-admin="-794" data-ban="370946" data-reason="نشر">
+            <td>-794</td>
+            <td>370946</td>
+            <td>نشر</td>
+            <td data-date="2025-03-21T00:35:43.508Z">3/21/2025, 03:35</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352440504943640747" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(35)"></td>
+          </tr>
+    
+          <tr id="row-36" class="" data-date="2025-03-21T02:44:33.864Z"
+              data-admin="11111" data-ban="370957" data-reason="نهائي تحرش">
+            <td>11111</td>
+            <td>370957</td>
+            <td>نهائي تحرش</td>
+            <td data-date="2025-03-21T02:44:33.864Z">3/21/2025, 05:44</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352472928406474852" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(36)"></td>
+          </tr>
+    
+          <tr id="row-37" class="" data-date="2025-03-21T02:47:48.911Z"
+              data-admin="2" data-ban="370997" data-reason="روح">
+            <td>2</td>
+            <td>370997</td>
+            <td>روح</td>
+            <td data-date="2025-03-21T02:47:48.911Z">3/21/2025, 05:47</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352473746493018227" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(37)"></td>
+          </tr>
+    
+          <tr id="row-38" class="" data-date="2025-03-21T03:00:01.227Z"
+              data-admin="-879" data-ban="367280" data-reason="اسلوب سيء بشكل متكرر">
+            <td>-879</td>
+            <td>367280</td>
+            <td>اسلوب سيء بشكل متكرر</td>
+            <td data-date="2025-03-21T03:00:01.227Z">3/21/2025, 06:00</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352476818049077339" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(38)"></td>
+          </tr>
+    
+          <tr id="row-39" class="" data-date="2025-03-21T03:56:12.254Z"
+              data-admin="717" data-ban="184431" data-reason="تحرش 3 ايام">
+            <td>717</td>
+            <td>184431</td>
+            <td>تحرش 3 ايام</td>
+            <td data-date="2025-03-21T03:56:12.254Z">3/21/2025, 06:56</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352490957161103430" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(39)"></td>
+          </tr>
+    
+          <tr id="row-40" class="" data-date="2025-03-21T03:56:26.915Z"
+              data-admin="717" data-ban="146335" data-reason="تحرش 3 ">
+            <td>717</td>
+            <td>146335</td>
+            <td>تحرش 3 </td>
+            <td data-date="2025-03-21T03:56:26.915Z">3/21/2025, 06:56</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352491018653667339" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(40)"></td>
+          </tr>
+    
+          <tr id="row-41" class="" data-date="2025-03-21T04:51:28.735Z"
+              data-admin="6831" data-ban="355601" data-reason="عنصريه">
+            <td>6831</td>
+            <td>355601</td>
+            <td>عنصريه</td>
+            <td data-date="2025-03-21T04:51:28.735Z">3/21/2025, 07:51</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352504867490369618" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(41)"></td>
+          </tr>
+    
+          <tr id="row-42" class="" data-date="2025-03-21T05:05:34.093Z"
+              data-admin="-985" data-ban="367002" data-reason="قذف">
+            <td>-985</td>
+            <td>367002</td>
+            <td>قذف</td>
+            <td data-date="2025-03-21T05:05:34.093Z">3/21/2025, 08:05</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352508413178937347" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(42)"></td>
+          </tr>
+    
+          <tr id="row-43" class="" data-date="2025-03-21T05:06:46.938Z"
+              data-admin="-985" data-ban="322573" data-reason="قذف">
+            <td>-985</td>
+            <td>322573</td>
+            <td>قذف</td>
+            <td data-date="2025-03-21T05:06:46.938Z">3/21/2025, 08:06</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352508718713016371" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(43)"></td>
+          </tr>
+    
+          <tr id="row-44" class="" data-date="2025-03-21T05:15:29.690Z"
+              data-admin="-879" data-ban="275396" data-reason="قذف ام">
+            <td>-879</td>
+            <td>275396</td>
+            <td>قذف ام</td>
+            <td data-date="2025-03-21T05:15:29.690Z">3/21/2025, 08:15</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352510911293947924" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(44)"></td>
+          </tr>
+    
+          <tr id="row-45" class="" data-date="2025-03-21T05:17:29.910Z"
+              data-admin="578" data-ban="301458" data-reason="سب و قدف">
+            <td>578</td>
+            <td>301458</td>
+            <td>سب و قدف</td>
+            <td data-date="2025-03-21T05:17:29.910Z">3/21/2025, 08:17</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352511415533178922" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(45)"></td>
+          </tr>
+    
+          <tr id="row-46" class="" data-date="2025-03-21T05:33:20.083Z"
+              data-admin="67" data-ban="362477" data-reason="قذف 5 ايام">
+            <td>67</td>
+            <td>362477</td>
+            <td>قذف 5 ايام</td>
+            <td data-date="2025-03-21T05:33:20.083Z">3/21/2025, 08:33</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352515400847458344" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(46)"></td>
+          </tr>
+    
+          <tr id="row-47" class="" data-date="2025-03-21T06:54:19.323Z"
+              data-admin="-29" data-ban="128524" data-reason="نشر  نهائي">
+            <td>-29</td>
+            <td>128524</td>
+            <td>نشر  نهائي</td>
+            <td data-date="2025-03-21T06:54:19.323Z">3/21/2025, 09:54</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352535781977100288" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(47)"></td>
+          </tr>
+    
+          <tr id="row-48" class="" data-date="2025-03-21T07:09:33.487Z"
+              data-admin="205" data-ban="365811" data-reason="نهائي ملفات ممنوعة">
+            <td>205</td>
+            <td>365811</td>
+            <td>نهائي ملفات ممنوعة</td>
+            <td data-date="2025-03-21T07:09:33.487Z">3/21/2025, 10:09</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352539616258822166" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(48)"></td>
+          </tr>
+    
+          <tr id="row-49" class="" data-date="2025-03-21T07:25:54.029Z"
+              data-admin="777" data-ban="371032" data-reason="5 ايام تحرش">
+            <td>777</td>
+            <td>371032</td>
+            <td>5 ايام تحرش</td>
+            <td data-date="2025-03-21T07:25:54.029Z">3/21/2025, 10:25</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352543728950312980" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(49)"></td>
+          </tr>
+    
+          <tr id="row-50" class="" data-date="2025-03-21T07:36:11.525Z"
+              data-admin="-42" data-ban="130700" data-reason="سب 3">
+            <td>-42</td>
+            <td>130700</td>
+            <td>سب 3</td>
+            <td data-date="2025-03-21T07:36:11.525Z">3/21/2025, 10:36</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352546318916259883" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(50)"></td>
+          </tr>
+    
+          <tr id="row-51" class="" data-date="2025-03-21T08:06:48.411Z"
+              data-admin="188" data-ban="364762" data-reason="قذف5  ايام">
+            <td>188</td>
+            <td>364762</td>
+            <td>قذف5  ايام</td>
+            <td data-date="2025-03-21T08:06:48.411Z">3/21/2025, 11:06</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352554023374422028" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(51)"></td>
+          </tr>
+    
+          <tr id="row-52" class="" data-date="2025-03-21T08:08:51.123Z"
+              data-admin="188" data-ban="360699" data-reason="نهائ نشر من بلاك">
+            <td>188</td>
+            <td>360699</td>
+            <td>نهائ نشر من بلاك</td>
+            <td data-date="2025-03-21T08:08:51.123Z">3/21/2025, 11:08</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352554538065854555" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(52)"></td>
+          </tr>
+    
+          <tr id="row-53" class="" data-date="2025-03-21T08:57:58.654Z"
+              data-admin="37" data-ban="-198" data-reason="اكمال">
+            <td>37</td>
+            <td>-198</td>
+            <td>اكمال</td>
+            <td data-date="2025-03-21T08:57:58.654Z">3/21/2025, 11:57</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352566900906786817" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(53)"></td>
+          </tr>
+    
+          <tr id="row-54" class="" data-date="2025-03-21T12:00:51.643Z"
+              data-admin="-68" data-ban="345101" data-reason="لعن">
+            <td>-68</td>
+            <td>345101</td>
+            <td>لعن</td>
+            <td data-date="2025-03-21T12:00:51.643Z">3/21/2025, 15:00</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352612924958441544" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(54)"></td>
+          </tr>
+    
+          <tr id="row-55" class="" data-date="2025-03-21T12:31:08.375Z"
+              data-admin="121" data-ban="343623" data-reason="قذف 5 ايام">
+            <td>121</td>
+            <td>343623</td>
+            <td>قذف 5 ايام</td>
+            <td data-date="2025-03-21T12:31:08.375Z">3/21/2025, 15:31</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352620544884736010" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(55)"></td>
+          </tr>
+    
+          <tr id="row-56" class="" data-date="2025-03-21T12:34:54.102Z"
+              data-admin="180" data-ban="369846" data-reason="قذف">
+            <td>180</td>
+            <td>369846</td>
+            <td>قذف</td>
+            <td data-date="2025-03-21T12:34:54.102Z">3/21/2025, 15:34</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352621491652395020" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(56)"></td>
+          </tr>
+    
+          <tr id="row-57" class="" data-date="2025-03-21T14:01:55.636Z"
+              data-admin="32" data-ban="337007" data-reason="تشفير يومين">
+            <td>32</td>
+            <td>337007</td>
+            <td>تشفير يومين</td>
+            <td data-date="2025-03-21T14:01:55.636Z">3/21/2025, 17:01</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352643392353341532" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(57)"></td>
+          </tr>
+    
+          <tr id="row-58" class="" data-date="2025-03-21T14:23:41.147Z"
+              data-admin="-38" data-ban="-852" data-reason="نهائي-تواصل مع راشدان او ابو زيود او ابو صقر او صافي">
+            <td>-38</td>
+            <td>-852</td>
+            <td>نهائي-تواصل مع راشدان او ابو زيود او ابو صقر او صافي</td>
+            <td data-date="2025-03-21T14:23:41.147Z">3/21/2025, 17:23</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352648868063481978" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(58)"></td>
+          </tr>
+    
+          <tr id="row-59" class="" data-date="2025-03-21T15:30:59.189Z"
+              data-admin="205" data-ban="215341" data-reason="نهائي هاك ">
+            <td>205</td>
+            <td>215341</td>
+            <td>نهائي هاك </td>
+            <td data-date="2025-03-21T15:30:59.189Z">3/21/2025, 18:30</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352665804839194694" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(59)"></td>
+          </tr>
+    
+          <tr id="row-60" class="" data-date="2025-03-21T15:34:49.346Z"
+              data-admin="-93" data-ban="329353" data-reason="هاك نهائي">
+            <td>-93</td>
+            <td>329353</td>
+            <td>هاك نهائي</td>
+            <td data-date="2025-03-21T15:34:49.346Z">3/21/2025, 18:34</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352666770187485215" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(60)"></td>
+          </tr>
+    
+          <tr id="row-61" class="" data-date="2025-03-21T15:43:43.546Z"
+              data-admin="22" data-ban="370173" data-reason="5 ايام">
+            <td>22</td>
+            <td>370173</td>
+            <td>5 ايام</td>
+            <td data-date="2025-03-21T15:43:43.546Z">3/21/2025, 18:43</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352669010784817175" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(61)"></td>
+          </tr>
+    
+          <tr id="row-62" class="" data-date="2025-03-21T17:35:21.527Z"
+              data-admin="-29" data-ban="311649" data-reason="تخريب بالرتبة الأدارية يوم">
+            <td>-29</td>
+            <td>311649</td>
+            <td>تخريب بالرتبة الأدارية يوم</td>
+            <td data-date="2025-03-21T17:35:21.527Z">3/21/2025, 20:35</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352697104153313422" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(62)"></td>
+          </tr>
+    
+          <tr id="row-63" class="" data-date="2025-03-21T17:59:58.850Z"
+              data-admin="13" data-ban="371151" data-reason="هاك">
+            <td>13</td>
+            <td>371151</td>
+            <td>هاك</td>
+            <td data-date="2025-03-21T17:59:58.850Z">3/21/2025, 20:59</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352703300495081653" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(63)"></td>
+          </tr>
+    
+          <tr id="row-64" class="" data-date="2025-03-21T18:20:21.430Z"
+              data-admin="-113" data-ban="335139" data-reason="تحرش">
+            <td>-113</td>
+            <td>335139</td>
+            <td>تحرش</td>
+            <td data-date="2025-03-21T18:20:21.430Z">3/21/2025, 21:20</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352708428367396915" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(64)"></td>
+          </tr>
+    
+          <tr id="row-65" class="" data-date="2025-03-21T19:17:11.099Z"
+              data-admin="-150" data-ban="334790" data-reason="3 ايام">
+            <td>-150</td>
+            <td>334790</td>
+            <td>3 ايام</td>
+            <td data-date="2025-03-21T19:17:11.099Z">3/21/2025, 22:17</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352722729555460118" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(65)"></td>
+          </tr>
+    
+          <tr id="row-66" class="" data-date="2025-03-21T19:26:59.154Z"
+              data-admin="205" data-ban="370471" data-reason="قذف + عنصرية 5 ايام">
+            <td>205</td>
+            <td>370471</td>
+            <td>قذف + عنصرية 5 ايام</td>
+            <td data-date="2025-03-21T19:26:59.154Z">3/21/2025, 22:26</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352725196037029900" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(66)"></td>
+          </tr>
+    
+          <tr id="row-67" class="" data-date="2025-03-21T19:42:24.240Z"
+              data-admin="89482" data-ban="295608" data-reason="شتم">
+            <td>89482</td>
+            <td>295608</td>
+            <td>شتم</td>
+            <td data-date="2025-03-21T19:42:24.240Z">3/21/2025, 22:42</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352729076128808993" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(67)"></td>
+          </tr>
+    
+          <tr id="row-68" class="" data-date="2025-03-21T21:11:38.115Z"
+              data-admin="-999" data-ban="248505" data-reason="سب">
+            <td>-999</td>
+            <td>248505</td>
+            <td>سب</td>
+            <td data-date="2025-03-21T21:11:38.115Z">3/22/2025, 24:11</td>
+            <td>0</td>
+            <td><a href="https://discord.com/channels/955845654528286740/955845658894553099/1352751531908272219" target="_blank">رابط الرسالة</a></td>
+            <td><input type="checkbox" onclick="toggleValidity(68)"></td>
+          </tr>
+    
+        </tbody>
+      </table>
+    </div>
+    <div class="footer">
+      <strong>Made with ♡ by 𝑻𝒖𝒓𝒌𝒊 10</strong><br>
+      آخر تحديث للجـدول: 3/22/2025, 12:28:19 AM
+    </div>
+  </div>
+
+  <script>
+    const sortDirections = {};
+    document.querySelectorAll('#bansTable thead th[data-col]').forEach((th, index) => {
+      th.style.textAlign = 'center';
+      th.addEventListener('click', function() {
+        sortTableByColumn(index);
+      });
+    });
+
+    function sortTableByColumn(colIndex) {
+      const table = document.getElementById('bansTable');
+      const tbody = table.querySelector('tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      if (!sortDirections[colIndex]) sortDirections[colIndex] = 'asc';
+      else sortDirections[colIndex] = sortDirections[colIndex] === 'asc' ? 'desc' : 'asc';
+
+      rows.sort((a, b) => {
+        const aText = a.cells[colIndex].innerText.trim();
+        const bText = b.cells[colIndex].innerText.trim();
+
+        // Sort by date column?
+        if (colIndex === 3) {
+          const aDate = new Date(a.cells[colIndex].getAttribute('data-date') || aText);
+          const bDate = new Date(b.cells[colIndex].getAttribute('data-date') || bText);
+          return sortDirections[colIndex] === 'asc' ? aDate - bDate : bDate - aDate;
+        }
+
+        // Sort by days column?
+        if (colIndex === 4) {
+          const aNum = parseInt(aText) || 0;
+          const bNum = parseInt(bText) || 0;
+          return sortDirections[colIndex] === 'asc' ? aNum - bNum : bNum - aNum;
+        }
+
+        // Else, normal string compare
+        return sortDirections[colIndex] === 'asc'
+          ? aText.localeCompare(bText)
+          : bText.localeCompare(aText);
+      });
+      rows.forEach(row => tbody.appendChild(row));
+    }
+
+    function toggleTable() {
+      const tableDiv = document.getElementById('tableContainer');
+      const currentDisplay = window.getComputedStyle(tableDiv).display;
+      tableDiv.style.display = (currentDisplay === 'none' ? 'block' : 'none');
+    }
+
+    function applyFilters() {
+      applyAllFilters();
+    }
+
+    function applyAllFilters() {
+      const adminBox = document.getElementById('adminFilterExact').value.trim();
+      const reasonBox = document.getElementById('reasonFilterPartial').value.toLowerCase().trim();
+      const rows = document.querySelectorAll('#bansTable tbody tr');
+
+      rows.forEach(row => {
+        let show = true;
+        const rowAdmin = row.getAttribute('data-admin');
+        const rowReason = row.getAttribute('data-reason').toLowerCase();
+
+        if (adminBox && rowAdmin !== adminBox) show = false;
+        if (reasonBox && !rowReason.includes(reasonBox)) show = false;
+
+        if (window.dateFilterStart && window.dateFilterEnd) {
+          const isoDate = row.getAttribute('data-date');
+          const rowDate = moment(isoDate);
+          if (!rowDate.isBetween(window.dateFilterStart, window.dateFilterEnd, undefined, '[]')) {
+            show = false;
+          }
+        }
+        row.style.display = show ? '' : 'none';
+      });
+      updateStats();
+    }
+
+    $(function() {
+      let start = moment('2024-01-01');
+      let end = moment();
+      function cb(s, e) {
+        $('#daterange span').html(s.format('YYYY/MM/DD') + ' - ' + e.format('YYYY/MM/DD'));
+        window.dateFilterStart = s;
+        window.dateFilterEnd = e;
+        applyAllFilters();
+      }
+      $('#daterange').daterangepicker({
+        startDate: start,
+        endDate: end,
+        locale: { format: 'YYYY/MM/DD' },
+        ranges: {
+          'اليوم': [moment(), moment()],
+          'أمس': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+          'آخر 7 أيام': [moment().subtract(6, 'days'), moment()],
+          'آخر 30 يوم': [moment().subtract(29, 'days'), moment()],
+          'من البداية': [moment('2024-01-01'), moment()]
+        }
+      }, cb);
+      cb(start, end);
+    });
+
+    function toggleValidity(rowId) {
+      const row = document.getElementById('row-' + rowId);
+      row.classList.toggle('valid-row');
+    }
+
+    function toggleSelectAll() {
+      const selectAllCb = document.getElementById('selectAll');
+      const checked = selectAllCb.checked;
+      const rows = document.querySelectorAll('#bansTable tbody tr');
+      rows.forEach(row => {
+        // Only check visible rows
+        if (row.style.display === 'none') return;
+        const cb = row.cells[6].querySelector('input[type="checkbox"]');
+        if (cb) {
+          cb.checked = checked;
+          if (checked) row.classList.add('valid-row');
+          else row.classList.remove('valid-row');
+        }
+      });
+    }
+
+    function updateStats() {
+      const rows = Array.from(document.querySelectorAll('#bansTable tbody tr'));
+      const visible = rows.filter(r => r.style.display !== 'none');
+      document.getElementById('totalCount').textContent = visible.length;
+    }
+  </script>
+</body>
+</html>
+  
