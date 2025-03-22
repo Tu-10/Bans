@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="utf-8" />
+  <title>جدول الباندات النشطة | Arab Evils</title>
+  <!-- daterangepicker CSS -->
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+  <style>
+    /* تجميد الرأس */
+    #bansTable thead {
+      position: sticky;
+      top: 0;
+      background-color: #59a89c;
+      z-index: 10;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap');
+    body { font-family: 'Cairo', sans-serif; background-color: #f8f9fa; margin: 0; padding: 0; direction: rtl; text-align: right; color: #333; }
+    .container { max-width: 1200px; margin: 40px auto; background-color: #fff; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); padding: 20px; }
+    h1 { text-align: center; color: #59a89c; margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase; }
+    .message { text-align: center; margin-bottom: 20px; font-size: 16px; color: #666; }
+    .stats { text-align: center; margin-bottom: 15px; font-size: 16px; }
+    .stats span { color: #59a89c; font-weight: bold; }
+    .buttons { text-align: center; margin-bottom: 20px; }
+    .buttons .button { padding: 10px 20px; margin: 5px; background-color: #59a89c; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; transition: background-color 0.3s ease; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
+    .buttons .button:hover { background-color: #479488; }
+    #tableContainer { display: none; }
+    #adminFilterExact, #reasonFilterPartial { width: 180px; margin: 0 5px; text-align: center; }
+    #daterange { display: inline-block; cursor: pointer; color: #333; background-color: #fff; border: 1px solid #ccc; padding: 6px 8px; border-radius: 5px; margin: 5px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.05); table-layout: fixed; border-radius: 15px; overflow: hidden; }
+    table thead tr { background-color: #59a89c; color: #fff; text-align: center; }
+    table thead tr th { padding: 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; }
+    table tbody tr { background-color: #fff; transition: background-color 0.3s; }
+    table tbody tr:hover { background-color: #f1f1f1; }
+    table td { padding: 12px; text-align: center; vertical-align: middle; word-wrap: break-word; border-bottom: 1px solid #eaeaea; }
+    .over7days { background-color: #fbdcdc; }
+    .valid-row { background-color: #c8e6c9 !important; }
+    input[type="checkbox"] { width: 18px; height: 18px; }
+    .footer { margin-top: 20px; text-align: center; font-style: italic; color: #999; font-size: 14px; }
+    thead th:nth-of-type(1), tbody td:nth-of-type(1){ width: 90px; }
+    thead th:nth-of-type(2), tbody td:nth-of-type(2){ width: 90px; }
+    thead th:nth-of-type(3), tbody td:nth-of-type(3){ width: 250px; }
+    thead th:nth-of-type(4), tbody td:nth-of-type(4){ width: 150px; }
+    thead th:nth-of-type(5), tbody td:nth-of-type(5){ width: 70px; }
+    thead th:nth-of-type(6), tbody td:nth-of-type(6){ width: 90px; }
+    thead th:nth-of-type(7), tbody td:nth-of-type(7){ width: 60px; }
+  </style>
+  <!-- jQuery, Moment, and daterangepicker JS -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/daterangepicker@3.1/daterangepicker.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+      <img src="https://i.postimg.cc/DzJhXv6N/512.gif" alt="شعار" style="width: 150px; height: 150px;">
+      <h1 style="margin: 0;">جـدول محدّث للباندات النشطة</h1>
+      <img src="https://i.postimg.cc/DzJhXv6N/512.gif" alt="شعار" style="width: 150px; height: 150px;">
+    </div>
+    <div class="message">
+      <b>هذا الجدول يعرض الباندات الغير مفكوكه فقط</b><br>
+      <b>هذا الجدول تم العمل عليه وتطويره بإجتهاد شخصي من 𝑻𝒖𝒓𝒌𝒊 10</b><br>
+      <b>هذا الجدول خاص لمسؤولين الباند ويمنع نشره لأي سبب كان ويعرضك للفصل في حال تسريبه</b><br>
+    </div>
+    <div class="stats">
+      <b> عدد الباندات الكلي (المعروضه في الجدول فقط): <span id="totalCount">0</span></b><br>
+      <b>آخر تحديث للجـدول: <span id="lastUpdate">--/--/----</span></b>
+    </div>
+    <div class="buttons">
+      <button class="button" onclick="toggleTable()"><b>إضغط هنا لإظهار/إخفاء الجدول</b></button>
+      <br>
+      <input id="adminFilterExact" type="text" placeholder="إبحث بالأيدي حقك" />
+      <input id="reasonFilterPartial" type="text" placeholder="إبحث بسبب الباند" />
+      <button class="button" onclick="applyFilters()"><b>بحث</b></button>
+      <br>
+      <div id="daterange">
+        <span>اختر نطاق التاريخ</span>
+        <b class="caret"></b>
+      </div>
+    </div>
+    <div id="tableContainer">
+      <table id="bansTable">
+        <thead>
+          <tr>
+            <th data-col="admin">أيدي الأدمن</th>
+            <th data-col="ban">أيدي المبند</th>
+            <th data-col="reason">سبب البان</th>
+            <th data-col="date">تاريخ الباند</th>
+            <th data-col="days">كم يوم مضى</th>
+            <th>رابط الرسالة</th>
+            <th>صحيح؟<br><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
+          </tr>
+        </thead>
+        <tbody id="bansTableBody">
+          <!-- Dynamic rows will be inserted here -->
+        </tbody>
+      </table>
+    </div>
+    <div class="footer">
+      <strong>Made with ♡ by 𝑻𝒖𝒓𝒌𝒊 10</strong><br>
+      آخر تحديث للجـدول: <span id="footerLastUpdate">--/--/----</span>
+    </div>
+  </div>
+
+  <script>
+    const sortDirections = {};
+    document.querySelectorAll('#bansTable thead th[data-col]').forEach((th, index) => {
+      th.style.textAlign = 'center';
+      th.addEventListener('click', function() {
+        sortTableByColumn(index);
+      });
+    });
+
+    function sortTableByColumn(colIndex) {
+      const table = document.getElementById('bansTable');
+      const tbody = table.querySelector('tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      if (!sortDirections[colIndex]) sortDirections[colIndex] = 'asc';
+      else sortDirections[colIndex] = sortDirections[colIndex] === 'asc' ? 'desc' : 'asc';
+
+      rows.sort((a, b) => {
+        const aText = a.cells[colIndex].innerText.trim();
+        const bText = b.cells[colIndex].innerText.trim();
+
+        if (colIndex === 3) {
+          const aDate = new Date(a.cells[colIndex].getAttribute('data-date') || aText);
+          const bDate = new Date(b.cells[colIndex].getAttribute('data-date') || bText);
+          return sortDirections[colIndex] === 'asc' ? aDate - bDate : bDate - aDate;
+        }
+        if (colIndex === 4) {
+          const aNum = parseInt(aText) || 0;
+          const bNum = parseInt(bText) || 0;
+          return sortDirections[colIndex] === 'asc' ? aNum - bNum : bNum - aNum;
+        }
+        return sortDirections[colIndex] === 'asc'
+          ? aText.localeCompare(bText)
+          : bText.localeCompare(aText);
+      });
+      rows.forEach(row => tbody.appendChild(row));
+    }
+
+    function toggleTable() {
+      const tableDiv = document.getElementById('tableContainer');
+      const currentDisplay = window.getComputedStyle(tableDiv).display;
+      tableDiv.style.display = (currentDisplay === 'none' ? 'block' : 'none');
+    }
+
+    function applyFilters() {
+      applyAllFilters();
+    }
+
+    function applyAllFilters() {
+      const adminBox = document.getElementById('adminFilterExact').value.trim();
+      const reasonBox = document.getElementById('reasonFilterPartial').value.toLowerCase().trim();
+      const rows = document.querySelectorAll('#bansTable tbody tr');
+
+      rows.forEach(row => {
+        let show = true;
+        const rowAdmin = row.getAttribute('data-admin');
+        const rowReason = row.getAttribute('data-reason').toLowerCase();
+
+        if (adminBox && rowAdmin !== adminBox) show = false;
+        if (reasonBox && !rowReason.includes(reasonBox)) show = false;
+
+        if (window.dateFilterStart && window.dateFilterEnd) {
+          const isoDate = row.getAttribute('data-date');
+          const rowDate = moment(isoDate);
+          if (!rowDate.isBetween(window.dateFilterStart, window.dateFilterEnd, undefined, '[]')) {
+            show = false;
+          }
+        }
+        row.style.display = show ? '' : 'none';
+      });
+      updateStats();
+    }
+
+    function toggleSelectAll() {
+      const selectAllCb = document.getElementById('selectAll');
+      const checked = selectAllCb.checked;
+      const rows = document.querySelectorAll('#bansTable tbody tr');
+      rows.forEach(row => {
+        if (row.style.display === 'none') return;
+        const cb = row.cells[6].querySelector('input[type="checkbox"]');
+        if (cb) {
+          cb.checked = checked;
+          if (checked) row.classList.add('valid-row');
+          else row.classList.remove('valid-row');
+        }
+      });
+    }
+
+    function updateStats() {
+      const rows = Array.from(document.querySelectorAll('#bansTable tbody tr'));
+      const visible = rows.filter(r => r.style.display !== 'none');
+      document.getElementById('totalCount').textContent = visible.length;
+    }
+
+    function updateLastUpdate() {
+      const now = moment().tz('Asia/Riyadh').format('MM/DD/YYYY, HH:mm');
+      document.getElementById('lastUpdate').textContent = now;
+      document.getElementById('footerLastUpdate').textContent = now;
+    }
+
+    async function fetchBans() {
+      try {
+        const response = await fetch('/api/active-bans');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const bans = await response.json();
+        updateBansTable(bans);
+        updateLastUpdate();
+      } catch (err) {
+        console.error('Error fetching active bans:', err);
+      }
+    }
+
+    function updateBansTable(bans) {
+      const tbody = document.getElementById('bansTableBody');
+      tbody.innerHTML = '';
+
+      bans.forEach((ban, i) => {
+        const banDate = new Date(ban.date);
+        const diffDays = Math.floor((new Date() - banDate) / (1000 * 60 * 60 * 24));
+        const safeReason = ban.reason.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        const tr = document.createElement('tr');
+        tr.setAttribute('data-date', banDate.toISOString());
+        tr.setAttribute('data-admin', ban.adminId);
+        tr.setAttribute('data-ban', ban.banId);
+        tr.setAttribute('data-reason', safeReason);
+        tr.innerHTML = `
+          <td>${ban.adminId}</td>
+          <td>${ban.banId}</td>
+          <td>${safeReason}</td>
+          <td data-date="${banDate.toISOString()}">${moment(banDate).format('MM/DD/YYYY, HH:mm')}</td>
+          <td>${diffDays}</td>
+          <td><a href="${ban.url}" target="_blank">رابط الرسالة</a></td>
+          <td><input type="checkbox" onclick="toggleValidity(${i})"></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      updateStats();
+    }
+
+    function toggleValidity(rowId) {
+      const row = document.getElementById('row-' + rowId);
+      if (row) row.classList.toggle('valid-row');
+    }
+
+    // Initialize daterangepicker
+    $(function() {
+      let start = moment('2024-01-01');
+      let end = moment();
+      function cb(s, e) {
+        $('#daterange span').html(s.format('YYYY/MM/DD') + ' - ' + e.format('YYYY/MM/DD'));
+        window.dateFilterStart = s;
+        window.dateFilterEnd = e;
+        applyAllFilters();
+      }
+      $('#daterange').daterangepicker({
+        startDate: start,
+        endDate: end,
+        locale: { format: 'YYYY/MM/DD' },
+        ranges: {
+          'اليوم': [moment(), moment()],
+          'أمس': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+          'آخر 7 أيام': [moment().subtract(6, 'days'), moment()],
+          'آخر 30 يوم': [moment().subtract(29, 'days'), moment()],
+          'من البداية': [moment('2024-01-01'), moment()]
+        }
+      }, cb);
+      cb(start, end);
+    });
+
+    // Fetch active bans on page load and every 60 seconds
+    fetchBans();
+    setInterval(fetchBans, 60000);
+  </script>
+</body>
+</html>
